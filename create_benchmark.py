@@ -85,7 +85,7 @@ def write_file(dic,knowledge,name):
             final_name = name+knowledge+'_bpo'
         elif ontology =='C':
             final_name = name+knowledge+'_cco'
-        print "Writing {} file".format(final_name)
+        print("Writing {} file".format(final_name))
         file_out = open(final_name,'w')
         for protein in sorted(dic[ontology]):
             for annotation in dic[ontology][protein]:
@@ -108,7 +108,7 @@ if __name__ == "__main__":
     try:
         os.mkdir(outdir)
     except:
-        print "The directory has already been created"
+        print("The directory has already been created")
     num1 = t1.split('.')[-1]
     num2 = t2.split('.')[-1]
     name = outdir+'/'+'.'.join(t1.split('/')[-1].split('.')[:-1])+'.'+num2+'-'+num1+'_benchmark_'
