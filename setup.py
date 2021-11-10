@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="CAFABench",
-    version="1.0.7",
+    version="1.0.10",
     author="Iddo Friedberg Lab",
     author_email="parnal@iastate.edu",
     description="A program to generate benchmark for the CAFA challenge",
