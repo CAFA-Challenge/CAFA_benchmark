@@ -9,6 +9,9 @@ git clone https://github.com/CAFA-Challenge/CAFA_benchmark.git
 User has to install python, and biopython (would recommend use anaconda package). 
 ## Usage:
 Within this directory when you clone it, the YEAST directory (downloaded from ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/old/YEAST/ ) will provide input for creating the benchmark, users are encourage to test it on more database
+```bash
+wget ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/
+```
 To create CAFA benchmark, choose the appropriate gfa files for t1, t2 time and a valid direction for ouput
 ```bash
 ./create_benchmark.py -t1 YEAST/gene_association.goa_ref_yeast.23 -t2 YEAST/gene_association.goa_ref_yeast.52 -o output
