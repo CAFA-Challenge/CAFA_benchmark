@@ -62,15 +62,16 @@ def read_gaf(file_name):
     # evidence = {'Evidence': set(['EXP', 'IDA', 'IPI', 'IMP', 'IGI', 'IEP'])}
     with open(file_name, 'r', encoding='utf8') as file_handle:
         for rec in GOA.gafiterator(file_handle):
-            all_protein_name.add(rec['DB_Object_ID'])
+            dic_id = rec['DB_Object_Symbol']+"_"+rec['Taxon_ID'][0].split(":")[1]
+            all_protein_name.add(dic_id)
             if GOA.record_has(rec, EXP_EVIDENCE) and rec['DB'] == 'UniProtKB':
-                if rec['DB_Object_ID'] not in dic:
-                    dic[rec['DB_Object_ID']] = {rec['Aspect']: set([rec['GO_ID']])}
+                if dic_id not in dic:
+                    dic[dic_id] = {rec['Aspect']: set([rec['GO_ID']])}
                 else:
-                    if rec['Aspect'] not in dic[rec['DB_Object_ID']]:
-                        dic[rec['DB_Object_ID']][rec['Aspect']] = set([rec['GO_ID']])
+                    if rec['Aspect'] not in dic[dic_id]:
+                        dic[dic_id][rec['Aspect']] = set([rec['GO_ID']])
                     else:
-                        dic[rec['DB_Object_ID']][rec['Aspect']].add(rec['GO_ID'])
+                        dic[dic_id][rec['Aspect']].add(rec['GO_ID'])
     return dic, all_protein_name
 
 
