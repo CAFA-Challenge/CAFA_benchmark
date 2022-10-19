@@ -10,7 +10,7 @@ import os
 import argparse
 from Bio.UniProt import GOA
 
-EXP_EVIDENCE = {'Evidence': set(['EXP', 'IDA', 'IPI', 'IMP', 'IGI', 'IEP'])}
+EXP_EVIDENCE = {'Evidence': set(['EXP', 'IDA', 'IPI', 'IMP', 'IGI', 'IEP', 'HTP', 'HDA', 'HMP', 'HGI', 'HEP'])}
 
 
 # Process arguments
