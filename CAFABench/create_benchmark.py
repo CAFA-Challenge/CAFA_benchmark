@@ -58,11 +58,12 @@ def read_gaf(file_name):
     # name = file_name.split(".")[-1]
     dic = {}
     all_protein_name = set()
+    taxon_map = {'9606': 'HUMAN', '10090': 'MOUSE'}
     # evidence from experimental
     # evidence = {'Evidence': set(['EXP', 'IDA', 'IPI', 'IMP', 'IGI', 'IEP'])}
     with open(file_name, 'r', encoding='utf8') as file_handle:
         for rec in GOA.gafiterator(file_handle):
-            dic_id = rec['DB_Object_Symbol']+"_"+rec['Taxon_ID'][0].split(":")[1]
+            dic_id = rec['DB_Object_Symbol']+"_"+taxon_map[rec['Taxon_ID'][0].split(":")[1]]
             all_protein_name.add(dic_id)
             if GOA.record_has(rec, EXP_EVIDENCE) and rec['DB'] == 'UniProtKB':
                 if dic_id not in dic:
