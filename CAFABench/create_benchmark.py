@@ -9,6 +9,8 @@ End    : 05/31/2017
 import os
 import argparse
 from Bio.UniProt import GOA
+from goatools import obo_parser
+import numpy as np
 
 EXP_EVIDENCE = {'Evidence': set(['EXP', 'IDA', 'IPI', 'IMP', 'IGI', 'IEP', 'HTP', 'HDA', 'HMP', 'HGI', 'HEP'])}
 
@@ -41,6 +43,7 @@ def process_args(args):
     num2 = t_2.split('.')[-1]
     name = outdir + '/' + '.'.join(t_1.split('/')[-1].split('.')[:-1]) \
            + '.' + num2 + '-' + num1 + '_benchmark_'
+
     write_file(nk_dic, 'NK', name)
     write_file(lk_dic, 'LK', name)
 
@@ -58,7 +61,7 @@ def read_gaf(file_name):
     # name = file_name.split(".")[-1]
     dic = {}
     all_protein_name = set()
-    taxon_map = {'9606': 'HUMAN', '10090': 'MOUSE'}
+    taxon_map = {'9606': 'HUMAN', '10090': 'MOUSE', "559292": 'YEAST'}
     # evidence from experimental
     # evidence = {'Evidence': set(['EXP', 'IDA', 'IPI', 'IMP', 'IGI', 'IEP'])}
     with open(file_name, 'r', encoding='utf8') as file_handle:
@@ -90,22 +93,51 @@ def analyze(t1_dic, t2_dic, all_protein_t1):
     lk_dic = {'P': {}, 'C': {}, 'F': {}}
     # dealing with NK and LK
 
-    for protein in t2_dic:
+    go_graph = obo_parser.GODag("go_cafa3.obo")
+
+    t2_prop = {}
+    for prot in t2_dic:
+        for aspect in t2_dic[prot]:
+            # print(prot, aspect, t2_dic[prot][aspect])
+            parents = []
+            for go in t2_dic[prot][aspect]:
+                try:
+                    parents.append(list(go_graph[go].get_all_parents()))
+                except:
+                    continue
+            parents = set(sum(parents, []))
+            t2_prop[prot] = {aspect: parents}
+            # t2_prop[prot][aspect] = parents
+
+    t1_prop = {}
+    for prot in t1_dic:
+        for aspect in t1_dic[prot]:
+            # print(prot, aspect, t1_dic[prot][aspect])
+            parents = []
+            for go in t1_dic[prot][aspect]:
+                try:
+                    parents.append(list(go_graph[go].get_all_parents()))
+                except:
+                    continue
+            parents = set(sum(parents, []))
+            t1_prop[prot] = {aspect: parents}
+
+    for protein in t2_prop:
         # check the protein in t2_dic but not appear in t1
-        if protein not in t1_dic and protein in all_protein_t1:  # this going to be in NK
+        if protein not in t1_prop and protein in all_protein_t1:  # this going to be in NK
             # check which ontology got new annotated
-            for ontology in t2_dic[protein]:
-                nk_dic[ontology][protein] = t2_dic[protein][ontology]
+            for ontology in t2_prop[protein]:
+                nk_dic[ontology][protein] = t2_prop[protein][ontology]
         # check the protein that in t2_dic and appear in t1
-        elif protein in t1_dic:
+        elif protein in t1_prop:
             # check if in t1, this protein does not have all 3 ontology
             # if yes, then not include since full knowledge
             # else
-            if len(t1_dic[protein]) < 3:
+            if len(t1_prop[protein]) < 3:
                 # check if t2_dic include in the ontology that t1 lack of
-                for ontology in t2_dic[protein]:
-                    if ontology not in t1_dic[protein]:  # for those lack, include in LK
-                        lk_dic[ontology][protein] = t2_dic[protein][ontology]
+                for ontology in t2_prop[protein]:
+                    if ontology not in t1_prop[protein]:  # for those lack, include in LK
+                        lk_dic[ontology][protein] = t2_prop[protein][ontology]
     return nk_dic, lk_dic
 
 
